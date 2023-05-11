@@ -1,5 +1,8 @@
 # Svelte Loadable Store
 
+![](https://img.shields.io/npm/v/svelte-loadable-store)
+![](https://img.shields.io/github/license/ngalaiko/svelte-loadable-store)
+
 This library provides a set of utility functions for creating and working with asynchronously populated stores in Svelte.
 It offers a way to manage store states during asynchronous operations and enables easy composition of derived stores.
 
