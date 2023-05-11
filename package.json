@@ -15,7 +15,8 @@
 		"prepublishOnly": "pnpm build",
 		"cleanup": "rm -rf ./lib/",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write ."
+		"format": "prettier --plugin-search-dir . --write .",
+		"test": "tsm node_modules/uvu/bin.js . '\\.test.ts$'"
 	},
 	"license": "MIT",
 	"author": "Nikita Galaiko <nikita@galaiko.rocks>",
@@ -29,6 +30,8 @@
 		"eslint": "^8.40.0",
 		"eslint-config-prettier": "^8.8.0",
 		"prettier": "^2.8.8",
-		"typescript": "^5.0.4"
+		"tsm": "^2.3.0",
+		"typescript": "^5.0.4",
+		"uvu": "^0.5.6"
 	}
 }
