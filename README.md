@@ -1,7 +1,7 @@
 # Svelte Loadable Store
 
 [![npm](https://img.shields.io/npm/v/svelte-loadable-store)](https://www.npmjs.com/package/svelte-loadable-store)
-[![licence](https://img.shields.io/github/license/ngalaiko/svelte-loadable-store)](https://github.com/ngalaiko/svelte-loadable-store/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/ngalaiko/svelte-loadable-store)](https://raw.githubusercontent.com/ngalaiko/svelte-loadable-store/master/LICENSE)
 [![test](https://github.com/ngalaiko/svelte-loadable-store/actions/workflows/test.yaml/badge.svg)](https://github.com/ngalaiko/svelte-loadable-store/actions/workflows/test.yaml)
 
 This library provides a set of utility functions for creating and working with asynchronously populated stores in Svelte.
@@ -32,10 +32,10 @@ import { writable } from 'svelte-loadable-store';
 const start = performance.now();
 
 const delay = (timeout: number) =>
-	new Promise<number>((resolve) => setTimeout(() => resolve(performance.now() - start), timeout));
+  new Promise<number>((resolve) => setTimeout(() => resolve(performance.now() - start), timeout));
 
 const startNotifier = (set: Subscriber<number>) => {
-	delay(200).then((value) => set(value));
+  delay(200).then((value) => set(value));
 };
 
 const store = writable(delay(100), startNotifier);
@@ -63,7 +63,7 @@ Example usage:
 const start = performance.now();
 
 const delay = (timeout: number) =>
-	new Promise<number>((resolve) => setTimeout(() => resolve(performance.now() - start), timeout));
+  new Promise<number>((resolve) => setTimeout(() => resolve(performance.now() - start), timeout));
 
 const first = writable(delay(100));
 const second = writable(delay(200));
@@ -94,4 +94,4 @@ Contributions to this library are welcome! If you find any issues or have sugges
 
 ## License
 
-This library is released under the [MIT License](https://opensource.org/licenses/MIT).
+This library is released under the [MIT License](https://raw.githubusercontent.com/ngalaiko/svelte-loadable-store/master/LICENSE).
