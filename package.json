@@ -1,5 +1,5 @@
 {
-	"name": "svelte-store-loadable",
+	"name": "svelte-loadable-store",
 	"version": "1.0.0",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
@@ -8,7 +8,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ngalaiko/svelte-store-loadable.git"
+		"url": "https://github.com/ngalaiko/svelte-loadable-store.git"
 	},
 	"scripts": {
 		"build": "pnpm cleanup && tsc",
