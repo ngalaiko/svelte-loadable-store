@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"outDir": "./lib",
+		"sourceMap": true,
+		"inlineSources": true,
+		"target": "ES6",
+		"moduleResolution": "node",
+		"module": "es2022",
+		"strict": true
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules/*"]
+}
