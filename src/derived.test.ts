@@ -33,4 +33,17 @@ test('should wait for multiple dependencies', async () => {
 	equal(get(store), { isLoading: false, value: 3 });
 });
 
+test('shoud wait for transitive dependencies', async () => {
+	const load = delay(1, 1);
+	const store = derived(
+		derived(readable(load), (value) => value + 1),
+		(value) => value + 1
+	);
+
+	equal(get(store), { isLoading: true });
+
+	await load;
+	equal(get(store), { isLoading: false, value: 3 });
+});
+
 test.run();
