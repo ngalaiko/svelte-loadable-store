@@ -1,6 +1,5 @@
 import { derived, type Readable } from 'svelte/store';
-import type { Loadable, Loaded } from './types';
-import { Loading } from '.';
+import type { Loadable, Loaded, Loading } from './types';
 
 type Stores<T> =
 	| Readable<Loadable<T>>
