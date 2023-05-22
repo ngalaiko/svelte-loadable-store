@@ -3,7 +3,7 @@ import { test } from 'uvu';
 
 import derived from './derived';
 import readable from './readable';
-import { get } from 'svelte/store';
+import { Subscriber, get } from 'svelte/store';
 
 const delay = <T>(ms: number, value: T): Promise<T> =>
 	new Promise((resolve) => setTimeout(() => resolve(value), ms));
@@ -43,6 +43,24 @@ test('shoud wait for transitive dependencies', async () => {
 	equal(get(store), { isLoading: true });
 
 	await load;
+	equal(get(store), { isLoading: false, value: 3 });
+});
+
+test('updates should propagate', async () => {
+	let updateStore: Subscriber<number> | undefined;
+	const store = derived(
+		readable(new Promise<number>(() => {}), (set) => {
+			updateStore = set;
+		}),
+		(value) => value + 1
+	);
+
+	equal(get(store), { isLoading: true });
+
+	updateStore?.(1);
+	equal(get(store), { isLoading: false, value: 2 });
+
+	updateStore?.(2);
 	equal(get(store), { isLoading: false, value: 3 });
 });
 
