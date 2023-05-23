@@ -21,7 +21,7 @@
 	"license": "MIT",
 	"author": "Nikita Galaiko <nikita@galaiko.rocks>",
 	"type": "module",
-	"dependencies": {
+	"peerDependencies": {
 		"svelte": "^3.59.1"
 	},
 	"devDependencies": {
