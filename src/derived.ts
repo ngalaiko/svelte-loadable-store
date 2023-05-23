@@ -1,5 +1,5 @@
 import { derived, type Readable } from 'svelte/store';
-import type { Loadable, Loaded, Loading } from './types';
+import { Loadable, Loaded, type Loading } from './types';
 
 type Stores<T> =
 	| (Readable<Loadable<T>> | Readable<T>)
@@ -21,33 +21,32 @@ type StoresValues<T> = T extends Readable<Loadable<infer U>>
 				: never;
 	  };
 
-const isLoadable = <T>(value: Loadable<T> | T): value is Loadable<T> =>
-	typeof value === 'object' && value !== null && 'isLoading' in value;
-
 const single = <U, T>(
 	store: Readable<Loadable<U>> | Readable<U>,
 	fn: (value: U) => T
 ): Readable<Loadable<T>> =>
 	derived(store, (value) =>
-		isLoadable(value)
+		Loadable.isLoadable(value)
 			? value.isLoading
 				? ({ isLoading: true } as Loading)
 				: ({ isLoading: false, value: fn(value.value) } as Loaded<T>)
 			: ({ isLoading: false, value: fn(value) } as Loaded<T>)
 	);
 
-const isLoaded = <U>(value: Loadable<U>): value is Loaded<U> => !value.isLoading;
-
 const array = <U, T>(
 	stores: Array<Readable<Loadable<U>> | Readable<U>>,
 	fn: (values: Array<U>) => T
 ): Readable<Loadable<T>> =>
 	derived(stores, (values) => {
-		const loaded = values.filter((value) => (isLoadable(value) ? isLoaded(value) : true));
+		const loaded = values.filter((value) =>
+			Loadable.isLoadable(value) ? Loaded.isLoaded(value) : true
+		);
 		return loaded.length === values.length
 			? ({
 					isLoading: false,
-					value: fn(loaded.map((value) => (isLoadable(value) ? (value as Loaded<U>).value : value)))
+					value: fn(
+						loaded.map((value) => (Loadable.isLoadable(value) ? (value as Loaded<U>).value : value))
+					)
 			  } as Loaded<T>)
 			: ({ isLoading: true } as Loading);
 	});
