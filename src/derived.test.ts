@@ -76,4 +76,51 @@ test('should derive from both vanilla and async stores', async () => {
 	equal(get(store), { isLoading: false, value: 3 });
 });
 
+test('should allow single vanilla derivation using a promise', async () => {
+	const store = derived(vanillaReadable(1), (a) => Promise.resolve(a + 1));
+
+	equal(get(store), { isLoading: true });
+
+	await delay(1, undefined);
+	equal(get(store), { isLoading: false, value: 2 });
+});
+
+test('should allow single loaded derivation using a promise', async () => {
+	const store = derived(readable(1), (a) => Promise.resolve(a + 1));
+
+	equal(get(store), { isLoading: true });
+
+	await delay(1, undefined);
+	equal(get(store), { isLoading: false, value: 2 });
+});
+
+test('should allow multiple vanilla derivation using a promise', async () => {
+	const store = derived([vanillaReadable(1), vanillaReadable(2)], ([a, b]) =>
+		Promise.resolve(a + b)
+	);
+
+	equal(get(store), { isLoading: true });
+
+	await delay(1, undefined);
+	equal(get(store), { isLoading: false, value: 3 });
+});
+
+test('should allow multiple loaded derivation using a promise', async () => {
+	const store = derived([readable(1), readable(2)], ([a, b]) => Promise.resolve(a + b));
+
+	equal(get(store), { isLoading: true });
+
+	await delay(1, undefined);
+	equal(get(store), { isLoading: false, value: 3 });
+});
+
+test('should allow loaded with vanilla derivation using a promise', async () => {
+	const store = derived([readable(1), vanillaReadable(2)], ([a, b]) => Promise.resolve(a + b));
+
+	equal(get(store), { isLoading: true });
+
+	await delay(1, undefined);
+	equal(get(store), { isLoading: false, value: 3 });
+});
+
 test.run();
