@@ -84,9 +84,6 @@ const array = <U, T>(
 		};
 	});
 
-// derived works similar to how it works in vanilla svelte.
-// it can be used to create an asynchronously populated store from other asynchronously populated stores.
-// the store will be in a loading state until all the dependencies are resolved.
 export default <S extends Stores<any>, T>(
 	stores: S,
 	fn: (values: StoresValues<S>) => T | Promise<T>
