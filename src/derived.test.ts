@@ -123,4 +123,34 @@ test('should allow loaded with vanilla derivation using a promise', async () => 
 	equal(get(store), { isLoading: false, value: 3 });
 });
 
+test('should set error if derivation promise rejects', async () => {
+	const error = new Error('test');
+	const store = derived(readable(1), () => Promise.reject(error));
+
+	equal(get(store), { isLoading: true });
+
+	await delay(1, undefined);
+	equal(get(store), { isLoading: false, value: error });
+});
+
+test('should set error if single store is error', async () => {
+	const error = new Error('test');
+	const store = derived(readable(Promise.reject(error)), (value) => value);
+
+	equal(get(store), { isLoading: true });
+
+	await delay(1, undefined);
+	equal(get(store), { isLoading: false, value: error });
+});
+
+test('should set error if one of multiple stores is error', async () => {
+	const error = new Error('test');
+	const store = derived([readable(1), readable(Promise.reject(error))], ([a, b]) => a + b);
+
+	equal(get(store), { isLoading: true });
+
+	await delay(1, undefined);
+	equal(get(store), { isLoading: false, value: error });
+});
+
 test.run();

@@ -44,4 +44,16 @@ test('should override value with update if store is loaded', async () => {
 	equal(get(store), { isLoading: false, value: 1 });
 });
 
+test('shoud set error if initial promise throws', async () => {
+	const error = new Error('test');
+
+	const load = Promise.reject(error);
+
+	const store = writable(load);
+	equal(get(store), { isLoading: true });
+
+	await load.catch(() => {});
+	equal(get(store), { isLoading: false, value: error });
+});
+
 test.run();

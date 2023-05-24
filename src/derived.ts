@@ -28,9 +28,11 @@ const single = <U, T>(
 	readable<Loadable<T>>({ isLoading: true }, (set) =>
 		store.subscribe((value) => {
 			if (Loaded.isLoaded(value)) {
-				const derivedValue = fn(value.value);
+				const derivedValue = fn(value.value as any);
 				if (derivedValue instanceof Promise) {
-					derivedValue.then((value) => set({ isLoading: false, value }));
+					derivedValue
+						.then((value) => set({ isLoading: false, value }))
+						.catch((error) => set({ isLoading: false, value: error }));
 				} else {
 					set({ isLoading: false, value: derivedValue });
 				}
@@ -53,23 +55,35 @@ const array = <U, T>(
 		const values = new Array(stores.length);
 		const unsubscribes = new Array(stores.length);
 		let loaded = 0;
+		let error: Error | undefined;
+		let isSet = false;
 
 		const update = () => {
-			if (loaded === values.length) {
+			if (isSet) {
+				return;
+			} else if (error) {
+				set({ isLoading: false, value: error });
+			} else if (loaded === values.length) {
 				const derivedValue = fn(values);
 				if (derivedValue instanceof Promise) {
-					derivedValue.then((value) => set({ isLoading: false, value }));
+					derivedValue
+						.then((value) => set({ isLoading: false, value }))
+						.catch((error) => set({ isLoading: false, value: error }));
 				} else {
 					set({ isLoading: false, value: derivedValue });
+					isSet = true;
 				}
 			}
 		};
 
 		stores.forEach((store, index) => {
 			unsubscribes[index] = store.subscribe((value) => {
-				if (Loaded.isLoaded(value)) {
+				if (Loaded.isValue(value)) {
 					values[index] = value.value;
 					loaded++;
+					update();
+				} else if (Loaded.isError(value)) {
+					error = value.value;
 					update();
 				} else if (!Loadable.isLoadable(value)) {
 					values[index] = value;

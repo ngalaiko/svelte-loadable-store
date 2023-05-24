@@ -23,9 +23,11 @@ export default <T>(
 	});
 
 	if (isValuePromised) {
-		value.then((value) =>
-			update((state) => (state.isLoading ? { isLoading: false, value } : state))
-		);
+		value
+			.then((value) => update((state) => (state.isLoading ? { isLoading: false, value } : state)))
+			.catch((error) =>
+				update((state) => (state.isLoading ? { isLoading: false, value: error } : state))
+			);
 	}
 
 	return { set, update, subscribe };
