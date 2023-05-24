@@ -1,6 +1,6 @@
-import type { Readable } from 'svelte/store';
+import type { Readable, StartStopNotifier } from 'svelte/store';
 import type { Loadable } from './types';
-import writable, { type StartStopNotifier } from './writable';
+import writable from './writable';
 
 export default <T>(
 	value?: T | Promise<T>,
