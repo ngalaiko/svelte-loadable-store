@@ -22,14 +22,14 @@ type Value<T> = T | Error;
 `writable` and `readable` allow to define stores that are initialized asyncronously, for example:
 
 ```typescript
-import { writable } from 'svelte-loadable-store';
+import { readable } from 'svelte-loadable-store';
 
 const start = performance.now();
 
 const delay = (timeout: number) =>
 	new Promise<number>((resolve) => setTimeout(() => resolve(performance.now() - start), timeout));
 
-const store = writable(delay(100), (set) => {
+const store = readable(delay(100), (set) => {
 	delay(200).then((value) => set(value));
 });
 
@@ -43,7 +43,7 @@ store.subscribe(console.log);
  */
 ```
 
-`readable` is exactly the same, just allow to `.set` and `.update` according to the Svelte's contract.
+`writable` is exactly the same, just allows to `.set` and `.update` according to the Svelte's contract.
 
 ## derived
 
