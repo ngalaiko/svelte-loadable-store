@@ -4,27 +4,22 @@
 [![license](https://img.shields.io/github/license/ngalaiko/svelte-loadable-store)](https://raw.githubusercontent.com/ngalaiko/svelte-loadable-store/master/LICENSE)
 [![test](https://github.com/ngalaiko/svelte-loadable-store/actions/workflows/test.yaml/badge.svg)](https://github.com/ngalaiko/svelte-loadable-store/actions/workflows/test.yaml)
 
-This library provides a set of utility functions for creating and working with asynchronously populated stores in Svelte.
-It offers a way to manage store states during asynchronous operations and enables easy composition of derived stores.
+This library provides wrappers for vanilla svelte stores to simplify consumption of async APIs.
 
-## Installation
+## Types
 
-You can install the library using your preferred package manager:
+Store value can be in three states: `loading`, `loaded` or `error`. Core types reflect that:
 
-```bash
-pnpm add svelte-loadable-store
+```typescript
+type Loadable<T> = Loading | Loaded<T>;
+type Loading = { isLoading: true };
+type Loaded<T> = { isLoading: false; value: Value<T> };
+type Value<T> = T | Error;
 ```
 
-## Usage
+## writable / readable
 
-### `writable(value?: T | Promise<T>, startStopNotifier?: StartStopNotifier<T>)`
-
-The `writable` function creates a writable store that can be populated asynchronously. It accepts two optional parameters:
-
-- `value` (optional): The initial value or a promise that resolves to the initial value of the store.
-- `startStopNotifier` (optional): A function that will be called when the store is subscribed to. This can be used to start and stop a subscription to WebSocket events or other asynchronous processes.
-
-Example usage:
+`writable` and `readable` allow to define stores that are initialized asyncronously, for example:
 
 ```typescript
 import { writable } from 'svelte-loadable-store';
@@ -32,13 +27,11 @@ import { writable } from 'svelte-loadable-store';
 const start = performance.now();
 
 const delay = (timeout: number) =>
-  new Promise<number>((resolve) => setTimeout(() => resolve(performance.now() - start), timeout));
+	new Promise<number>((resolve) => setTimeout(() => resolve(performance.now() - start), timeout));
 
-const startNotifier = (set: Subscriber<number>) => {
-  delay(200).then((value) => set(value));
-};
-
-const store = writable(delay(100), startNotifier);
+const store = writable(delay(100), (set) => {
+	delay(200).then((value) => set(value));
+});
 
 store.subscribe(console.log);
 
@@ -50,24 +43,24 @@ store.subscribe(console.log);
  */
 ```
 
-### `derived<S extends Stores<any>, T>(stores: S, fn: (values: StoresValues<S>) => T)`
+`readable` is exactly the same, just allow to `.set` and `.update` according to the Svelte's contract.
 
-The `derived` function creates a derived store that depends on other asynchronously populated stores. It accepts two parameters:
+## derived
 
-- `stores`: A single store or an array of stores that the derived store depends on.
-- `fn`: A function that receives the resolved values of the dependent stores and returns the derived value.
-
-Example usage:
+The real power comes with `derived` stores. Derived function will be executed only after all of the
+input stores are loaded successfully. You can also derive asyncronously.
 
 ```typescript
+import { writable, derived } from 'svelte-loadable-store';
+
 const start = performance.now();
 
 const delay = (timeout: number) =>
-  new Promise<number>((resolve) => setTimeout(() => resolve(performance.now() - start), timeout));
+	new Promise<number>((resolve) => setTimeout(() => resolve(performance.now() - start), timeout));
 
 const first = writable(delay(100));
 const second = writable(delay(200));
-const third = derived([first, second], ([first, second]) => first + second);
+const third = derived([first, second], async ([first, second]) => first + second);
 
 first.subscribe((v) => console.log('first', v));
 second.subscribe((v) => console.log('second', v));
@@ -84,14 +77,35 @@ third.subscribe((v) => console.log('third', v));
  */
 ```
 
-### `readable<T>(value?: T | Promise<T>, startStopNotifier?: StartStopNotifier<T>)`
+## error handling
 
-The `readable` function is an alias for `writable` and provides a consistent interface when creating readable stores. It accepts the same parameters as `writable`.
+Library exposes a few handy functions to use when working with store values, for example:
 
-## Contribution
+```svelte
+<script lang="ts">
+    import { writable, derived, Value } from 'svelte-loadable-store'
 
-Contributions to this library are welcome! If you find any issues or have suggestions for improvements, please feel free to submit a pull request or create an issue in the GitHub repository.
+    const fetchData = (): Promise<Data> => fetch('https://api.example.com/data').then(response => response.json())
+
+    const data = writable(fetchData)
+</script>
+
+{#if $data.isLoading}
+    loading..
+{:else Value.isError($data.value)}
+    error: {$data.value}
+{:else}
+    data: {$data.value}
+{/if}
+```
+
+## Acknowledgement
+
+This library is inspired by [@square/svelte-store)](https://github.com/square/svelte-store`). I have been using it myself
+before writing this one, but found it having quite a complex interface and faced [some issues](https://github.com/square/svelte-store/issues/61).
+
+Inspiration for type definitions comes from this [nanostores issue](https://github.com/orgs/nanostores/discussions/150).
 
 ## License
 
-This library is released under the [MIT License](https://raw.githubusercontent.com/ngalaiko/svelte-loadable-store/master/LICENSE).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
