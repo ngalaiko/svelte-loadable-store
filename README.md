@@ -101,7 +101,7 @@ Library exposes a few handy functions to use when working with store values, for
 
 ## Acknowledgement
 
-This library is inspired by [@square/svelte-store)](https://github.com/square/svelte-store`). I have been using it myself
+This library is inspired by [@square/svelte-store](https://github.com/square/svelte-store). I have been using it myself
 before writing this one, but found it having quite a complex interface and faced [some issues](https://github.com/square/svelte-store/issues/61).
 
 Inspiration for type definitions comes from this [nanostores issue](https://github.com/orgs/nanostores/discussions/150).
