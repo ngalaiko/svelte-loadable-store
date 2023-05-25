@@ -3,7 +3,13 @@ import { test } from 'uvu';
 
 import derived from './derived';
 import readable from './readable';
-import { Subscriber, get, readable as vanillaReadable } from 'svelte/store';
+import writable from './writable';
+import {
+	Subscriber,
+	get,
+	readable as vanillaReadable,
+	writable as vanillaWritable
+} from 'svelte/store';
 
 const delay = <T>(ms: number, value: T): Promise<T> =>
 	new Promise((resolve) => setTimeout(() => resolve(value), ms));
@@ -157,6 +163,42 @@ test('should derive no stores are provided', async () => {
 	const store = derived([], () => 1);
 
 	equal(get(store), { isLoading: false, value: 1 });
+});
+
+test('should derive single continiously', async () => {
+	const store = writable(1);
+
+	const derivedStore = derived(store, (value) => value + 1);
+	equal(get(derivedStore), { isLoading: false, value: 2 });
+
+	store.set({ isLoading: false, value: 2 });
+	equal(get(derivedStore), { isLoading: false, value: 3 });
+
+	store.set({ isLoading: false, value: new Error('test') });
+	equal(get(derivedStore), { isLoading: false, value: new Error('test') });
+
+	store.set({ isLoading: false, value: 3 });
+	equal(get(derivedStore), { isLoading: false, value: 4 });
+});
+
+test('should derive multiple continiously', async () => {
+	const store1 = writable(1);
+	const store2 = vanillaWritable(2);
+
+	const derivedStore = derived([store1, store2], ([a, b]) => a + b);
+	equal(get(derivedStore), { isLoading: false, value: 3 });
+
+	store1.set({ isLoading: false, value: 2 });
+	equal(get(derivedStore), { isLoading: false, value: 4 });
+
+	store2.set(3);
+	equal(get(derivedStore), { isLoading: false, value: 5 });
+
+	store1.set({ isLoading: false, value: new Error('test') });
+	equal(get(derivedStore), { isLoading: false, value: new Error('test') });
+
+	store1.set({ isLoading: false, value: 3 });
+	equal(get(derivedStore), { isLoading: false, value: 6 });
 });
 
 test.run();
