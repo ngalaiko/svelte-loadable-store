@@ -153,4 +153,10 @@ test('should set error if one of multiple stores is error', async () => {
 	equal(get(store), { isLoading: false, value: error });
 });
 
+test('should derive no stores are provided', async () => {
+	const store = derived([], () => 1);
+
+	equal(get(store), { isLoading: false, value: 1 });
+});
+
 test.run();

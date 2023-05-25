@@ -93,6 +93,7 @@ const array = <U, T>(
 			});
 		});
 
+        update()
 		return () => {
 			unsubscribes.forEach((unsubscribe) => unsubscribe());
 		};
