@@ -104,23 +104,20 @@ Library exposes a few handy functions to use when working with store values, for
 A util funciton that converts a store into promise that will resolve with the first loaded value.
 
 ```ts
-import { readable, promisify } from 'svelte-loadable-store'
-
+import { readable, promisify } from 'svelte-loadable-store';
 
 const delay = (timeout: number) =>
 	new Promise<number>((resolve) => setTimeout(() => resolve(performance.now() - start), timeout));
 
-const store = readable(delay(100))
+const store = readable(delay(100));
 
-promisify(store).then(console.log)
+promisify(store).then(console.log);
 
-/* 
- * prints: 
+/*
+ * prints:
  * 101
  */
-
 ```
-
 
 ## Acknowledgement
 
