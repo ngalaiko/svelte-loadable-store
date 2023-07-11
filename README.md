@@ -13,8 +13,7 @@ Store value can be in three states: `loading`, `loaded` or `error`. Core types r
 ```typescript
 type Loadable<T> = Loading | Loaded<T>;
 type Loading = { isLoading: true };
-type Loaded<T> = { isLoading: false; value: Value<T> };
-type Value<T> = T | Error;
+type Loaded<T> = { isLoading: false; value: T } | { isLoading: false; error: any };
 ```
 
 ## writable / readable
@@ -83,7 +82,7 @@ Library exposes a few handy functions to use when working with store values, for
 
 ```svelte
 <script lang="ts">
-    import { writable, derived, Value } from 'svelte-loadable-store'
+    import { writable, derived, Loaded } from 'svelte-loadable-store'
 
     const fetchData = (): Promise<Data> => fetch('https://api.example.com/data').then(response => response.json())
 
@@ -92,8 +91,8 @@ Library exposes a few handy functions to use when working with store values, for
 
 {#if $data.isLoading}
     loading..
-{:else Value.isError($data.value)}
-    error: {$data.value}
+{:else Loaded.isError($data)}
+    error: {$data.error}
 {:else}
     data: {$data.value}
 {/if}
