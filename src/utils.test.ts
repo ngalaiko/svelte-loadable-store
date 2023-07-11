@@ -36,7 +36,7 @@ test('promisify should reject failed store', async () => {
 	} catch (e) {
 		equal(e, testError);
 	}
-	equal(get(store), { isLoading: false, value: testError });
+	equal(get(store), { isLoading: false, error: testError });
 });
 
 test.run();

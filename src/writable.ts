@@ -20,7 +20,7 @@ export default <T>(
 		value
 			.then((value) => update((state) => (state.isLoading ? { isLoading: false, value } : state)))
 			.catch((error) =>
-				update((state) => (state.isLoading ? { isLoading: false, value: error } : state))
+				update((state) => (state.isLoading ? { isLoading: false, error: error } : state))
 			);
 	}
 

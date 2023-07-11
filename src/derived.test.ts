@@ -136,7 +136,7 @@ test('should set error if derivation promise rejects', async () => {
 	equal(get(store), { isLoading: true });
 
 	await delay(1, undefined);
-	equal(get(store), { isLoading: false, value: error });
+	equal(get(store), { isLoading: false, error: error });
 });
 
 test('should set error if single store is error', async () => {
@@ -146,7 +146,7 @@ test('should set error if single store is error', async () => {
 	equal(get(store), { isLoading: true });
 
 	await delay(1, undefined);
-	equal(get(store), { isLoading: false, value: error });
+	equal(get(store), { isLoading: false, error: error });
 });
 
 test('should set error if one of multiple stores is error', async () => {
@@ -156,7 +156,7 @@ test('should set error if one of multiple stores is error', async () => {
 	equal(get(store), { isLoading: true });
 
 	await delay(1, undefined);
-	equal(get(store), { isLoading: false, value: error });
+	equal(get(store), { isLoading: false, error: error });
 });
 
 test('should derive no stores are provided', async () => {
@@ -174,8 +174,8 @@ test('should derive single continiously', async () => {
 	store.set({ isLoading: false, value: 2 });
 	equal(get(derivedStore), { isLoading: false, value: 3 });
 
-	store.set({ isLoading: false, value: new Error('test') });
-	equal(get(derivedStore), { isLoading: false, value: new Error('test') });
+	store.set({ isLoading: false, error: new Error('test') });
+	equal(get(derivedStore), { isLoading: false, error: new Error('test') });
 
 	store.set({ isLoading: false, value: 3 });
 	equal(get(derivedStore), { isLoading: false, value: 4 });
@@ -194,8 +194,8 @@ test('should derive multiple continiously', async () => {
 	store2.set(3);
 	equal(get(derivedStore), { isLoading: false, value: 5 });
 
-	store1.set({ isLoading: false, value: new Error('test') });
-	equal(get(derivedStore), { isLoading: false, value: new Error('test') });
+	store1.set({ isLoading: false, error: new Error('test') });
+	equal(get(derivedStore), { isLoading: false, error: new Error('test') });
 
 	store1.set({ isLoading: false, value: 3 });
 	equal(get(derivedStore), { isLoading: false, value: 6 });

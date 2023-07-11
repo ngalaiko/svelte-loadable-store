@@ -61,7 +61,7 @@ test('should not override value from initial promise if store is loaded', async 
 	equal(get(store), { isLoading: false, value: 2 });
 });
 
-test('should set error if initial promise throws', async () => {
+test('should set error if initial promise throws error', async () => {
 	const error = new Error('test');
 	const load = Promise.reject(error);
 
@@ -69,7 +69,18 @@ test('should set error if initial promise throws', async () => {
 	equal(get(store), { isLoading: true });
 
 	await load.catch(() => {});
-	equal(get(store), { isLoading: false, value: error });
+	equal(get(store), { isLoading: false, error: error });
+});
+
+test('should set error if initial promise throws custom error', async () => {
+	const error = { message: 'test' };
+	const load = Promise.reject(error);
+
+	const store = readable(load);
+	equal(get(store), { isLoading: true });
+
+	await load.catch(() => {});
+	equal(get(store), { isLoading: false, error: error });
 });
 
 test.run();

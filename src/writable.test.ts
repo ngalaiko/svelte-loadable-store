@@ -4,6 +4,7 @@ import { test } from 'uvu';
 import { get } from 'svelte/store';
 
 import writable from './writable';
+import { Loaded } from './types';
 
 const delay = <T>(ms: number, value: T): Promise<T> =>
 	new Promise((resolve) => setTimeout(() => resolve(value), ms));
@@ -44,7 +45,7 @@ test('should override value with update if store is loaded', async () => {
 	equal(get(store), { isLoading: false, value: 1 });
 });
 
-test('shoud set error if initial promise throws', async () => {
+test('shoud set error if initial promise throws error', async () => {
 	const error = new Error('test');
 
 	const load = Promise.reject(error);
@@ -53,7 +54,19 @@ test('shoud set error if initial promise throws', async () => {
 	equal(get(store), { isLoading: true });
 
 	await load.catch(() => {});
-	equal(get(store), { isLoading: false, value: error });
+	equal(get(store), { isLoading: false, error: error });
+});
+
+test('shoud set error if initial promise throws custom error', async () => {
+	const error = { error: 'test' };
+
+	const load = Promise.reject(error);
+
+	const store = writable(load);
+	equal(get(store), { isLoading: true });
+
+	await load.catch(() => {});
+	equal(get(store), { isLoading: false, error: error });
 });
 
 test.run();

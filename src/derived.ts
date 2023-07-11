@@ -1,5 +1,5 @@
 import { readable, type Readable } from 'svelte/store';
-import { Loadable, Loaded, Value } from './types';
+import { Loadable, Loaded } from './types';
 
 type Stores<T> =
 	| (Readable<Loadable<T>> | Readable<T>)
@@ -30,18 +30,16 @@ const single = <U, T>(
 			const value: Loadable<any> = Loadable.isLoadable(maybeLoadable)
 				? maybeLoadable
 				: { isLoading: false, value: maybeLoadable };
-			if (Loaded.isLoaded(value)) {
-				if (Value.isError(value.value)) {
-					set(value);
+			if (Loaded.isError(value)) {
+				set(value);
+			} else if (Loaded.isValue(value)) {
+				const derivedValue = fn(value.value as any);
+				if (derivedValue instanceof Promise) {
+					derivedValue
+						.then((value) => set({ isLoading: false, value }))
+						.catch((error) => set({ isLoading: false, error: error }));
 				} else {
-					const derivedValue = fn(value.value as any);
-					if (derivedValue instanceof Promise) {
-						derivedValue
-							.then((value) => set({ isLoading: false, value }))
-							.catch((error) => set({ isLoading: false, value: error }));
-					} else {
-						set({ isLoading: false, value: derivedValue });
-					}
+					set({ isLoading: false, value: derivedValue });
 				}
 			}
 		})
@@ -56,17 +54,15 @@ const array = <U, T>(
 		const unsubscribes = new Array(stores.length);
 
 		const update = () => {
-			const firstError = values.find(
-				(value) => Loaded.isLoaded(value) && Value.isError(value.value)
-			);
+			const firstError = values.find((value) => Loaded.isError(value));
 			if (firstError) {
 				set(firstError);
-			} else if (values.every(Loaded.isLoaded)) {
+			} else if (values.every(Loaded.isValue)) {
 				const derivedValue = fn(values.map((value) => value.value));
 				if (derivedValue instanceof Promise) {
 					derivedValue
 						.then((value) => set({ isLoading: false, value }))
-						.catch((error) => set({ isLoading: false, value: error }));
+						.catch((error) => set({ isLoading: false, error: error }));
 				} else {
 					set({ isLoading: false, value: derivedValue });
 				}
